@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
+import { Globe, Moon, Sun } from "lucide-react"
 import Demo from "@/components/sections/dish-orbit-demo"
 import { cn } from "@/lib/utils"
 
-// Shell around the Dish Orbit Carousel that exercises the two design rules
-// the platform brief calls out for every screen: Arabic RTL next to English
-// LTR, and a light/dark theme switch, on a clean, minimal SaaS chrome.
+// No separate header bar: the language and theme switches sit as one small
+// floating control on top of the page itself, where a premium SaaS surface
+// would place a settings affordance — not as chrome that competes with it.
 export default function App() {
   const [dark, setDark] = useState(false)
   const [rtl, setRtl] = useState(false)
@@ -20,36 +21,32 @@ export default function App() {
 
   return (
     <div className="min-h-svh bg-background text-foreground">
-      <header className="container flex items-center justify-between py-5">
-        <div className="flex items-center gap-2">
-          <span className="h-7 w-7 rounded-lg bg-primary" aria-hidden="true" />
-          <span className="font-semibold tracking-tight">
-            {rtl ? "لوحة المطعم" : "Restaurant Dashboard"}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setRtl((v) => !v)}
-            className={cn(
-              "rounded-full border border-border px-3 py-1.5 text-sm font-medium",
-              "hover:bg-accent transition-colors",
-            )}
-          >
-            {rtl ? "English" : "العربية"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setDark((v) => !v)}
-            className={cn(
-              "rounded-full border border-border px-3 py-1.5 text-sm font-medium",
-              "hover:bg-accent transition-colors",
-            )}
-          >
-            {dark ? (rtl ? "فاتح" : "Light") : rtl ? "داكن" : "Dark"}
-          </button>
-        </div>
-      </header>
+      <div
+        className={cn(
+          "fixed top-4 z-50 flex items-center gap-1 rounded-full border border-border/60",
+          "bg-card/70 p-1 shadow-lg shadow-black/5 backdrop-blur-md",
+          rtl ? "left-4" : "right-4",
+        )}
+      >
+        <button
+          type="button"
+          onClick={() => setRtl((v) => !v)}
+          aria-label={rtl ? "Switch to English" : "التبديل إلى العربية"}
+          title={rtl ? "English" : "العربية"}
+          className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        >
+          <Globe className="h-4 w-4" strokeWidth={1.75} />
+        </button>
+        <button
+          type="button"
+          onClick={() => setDark((v) => !v)}
+          aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+          title={dark ? (rtl ? "فاتح" : "Light") : rtl ? "داكن" : "Dark"}
+          className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        >
+          {dark ? <Sun className="h-4 w-4" strokeWidth={1.75} /> : <Moon className="h-4 w-4" strokeWidth={1.75} />}
+        </button>
+      </div>
 
       <main>
         <Demo />
