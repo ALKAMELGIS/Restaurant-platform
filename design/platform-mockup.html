@@ -6,175 +6,190 @@
 <title>Restaurant Platform — Design Preview</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&family=IBM+Plex+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200..800&family=IBM+Plex+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet" />
 <style>
+  /*
+    Design language taken from the Dish Orbit Carousel component itself, not
+    from a generic SaaS kit: a warm ink/cream pair, one typographic move
+    (thin line over heavy line, same as the dish title), and colour that
+    belongs to a dish or a restaurant rather than to the whole system. There
+    is no brand orange painted over every button, and no red/amber/green
+    traffic lights — each row carries its own accent, the way a plated dish
+    carries its own.
+  */
   :root{
-    --color-background:#fbf8f4; --color-foreground:#1f1a16; --color-muted-foreground:#756b60; --color-primary:#ef7a3c;
-    --card:#ffffff; --border:#e7ded2; --sidebar:#fffaf4;
-    --success:#1f8a5f; --warning:#c47f17; --danger:#c4433a;
+    --color-background:#fbf8f4; --color-foreground:#1f1a16; --color-muted-foreground:#79705f; --color-primary:#a8402a;
+    --card:#ffffff; --border:#e5ddcd; --sidebar:#f4efe4;
     --font-ar:"IBM Plex Sans Arabic","Outfit",sans-serif; --font-en:"Outfit",sans-serif;
+    /* dish accents — cycled per row/card instead of one system colour */
+    --a1:#a8402a; --a2:#6f7a46; --a3:#3f6e72; --a4:#b07f2e; --a5:#8a4a57; --a6:#45586b;
   }
   html.dark{
-    --color-background:#16120f; --color-foreground:#f6efe6; --color-muted-foreground:#b4a898; --color-primary:#f08a4f;
-    --card:#1d1712; --border:#322a22; --sidebar:#1a1510;
-    --success:#3fbf8c; --warning:#e3a93f; --danger:#e3685c;
+    --color-background:#15110d; --color-foreground:#f3ece0; --color-muted-foreground:#a8998349; --color-muted-foreground:#a79882;
+    --card:#1c1611; --border:#332a20; --sidebar:#201a14;
+    --a1:#d77a5d; --a2:#9bab73; --a3:#6fa8ac; --a4:#d9ad5f; --a5:#bd7e8a; --a6:#7e92a8;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--color-background);color:var(--color-foreground);font-family:var(--font-ar);transition:background .3s,color .3s}
   html[dir="ltr"] body{font-family:var(--font-en)}
   a{color:inherit}
 
-  /* floating language + theme control, same pattern as the carousel shell */
-  .controls{position:fixed;top:14px;left:14px;z-index:60;display:flex;gap:2px;padding:4px;background:color-mix(in oklab,var(--card) 72%,transparent);border:1px solid var(--border);border-radius:999px;backdrop-filter:blur(10px);box-shadow:0 8px 24px -12px rgba(0,0,0,.25)}
-  html[dir="ltr"] .controls{left:auto;right:14px}
-  .controls button{appearance:none;border:0;background:none;color:var(--color-muted-foreground);width:30px;height:30px;display:grid;place-items:center;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
-  .controls button:hover{background:var(--border);color:var(--color-foreground)}
-  .controls svg{width:15px;height:15px}
+  /* ---- type scale: thin label over heavy line, lifted from .dsh-t1 / .dsh-t2 ---- */
+  .eyebrow{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--color-muted-foreground);margin:0 0 3px}
+  .headline{margin:0;line-height:1.05}
+  .headline .thin{display:block;font-weight:200;font-size:15px;letter-spacing:-.01em}
+  .headline .heavy{display:block;font-weight:800;font-size:26px;letter-spacing:-.025em}
+  .figure{font-weight:200;font-size:34px;letter-spacing:-.03em;line-height:1}
+  .figure b{font-weight:800}
 
-  /* role switch — three tabs for the three levels in the brief */
-  .role-tabs{position:sticky;top:0;z-index:40;display:flex;gap:4px;justify-content:center;padding:14px 0;background:color-mix(in oklab,var(--color-background) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
-  .role-tab{appearance:none;border:1px solid var(--border);background:var(--card);color:var(--color-muted-foreground);font:inherit;font-size:13px;font-weight:600;padding:8px 18px;border-radius:999px;cursor:pointer;transition:.2s}
-  .role-tab[aria-selected="true"]{background:var(--color-primary);border-color:var(--color-primary);color:#fff}
+  /* ---- controls: plain icon pair, hairline only, no glass pill ---- */
+  .controls{position:fixed;top:18px;left:18px;z-index:60;display:flex;gap:14px}
+  html[dir="ltr"] .controls{left:auto;right:18px}
+  .controls button{appearance:none;border:0;background:none;color:var(--color-muted-foreground);width:22px;height:22px;display:grid;place-items:center;cursor:pointer}
+  .controls button:hover{color:var(--color-foreground)}
+  .controls svg{width:16px;height:16px}
 
-  .screen{display:none;max-width:1360px;margin:0 auto;padding:22px 22px 60px}
+  /* ---- role switch: underline tabs, weight contrast instead of filled pills ---- */
+  .role-tabs{position:sticky;top:0;z-index:40;display:flex;gap:28px;justify-content:center;padding:22px 0 14px;background:var(--color-background);border-bottom:1px solid var(--border)}
+  .role-tab{appearance:none;border:0;border-bottom:2px solid transparent;background:none;color:var(--color-muted-foreground);font:inherit;font-size:12.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;padding:0 0 12px;cursor:pointer;transition:color .2s,border-color .2s}
+  .role-tab[aria-selected="true"]{color:var(--color-foreground);border-color:var(--color-primary)}
+
+  .screen{display:none;max-width:1360px;margin:0 auto;padding:30px 22px 70px}
   .screen.active{display:block}
-  .layout{display:grid;grid-template-columns:230px 1fr;gap:22px;align-items:start}
+  .layout{display:grid;grid-template-columns:220px 1fr;gap:30px;align-items:start}
   @media (max-width:900px){.layout{grid-template-columns:1fr}}
 
-  .sidebar{background:var(--sidebar);border:1px solid var(--border);border-radius:18px;padding:14px;position:sticky;top:78px}
-  .sidebar .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 16px;font-weight:700;font-size:15px}
-  .sidebar .brand i{width:26px;height:26px;border-radius:9px;background:var(--color-primary);display:block}
-  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;font-size:13.5px;font-weight:500;color:var(--color-muted-foreground);cursor:default}
-  .nav-item svg{width:16px;height:16px;flex:none}
-  .nav-item.active{background:color-mix(in oklab,var(--color-primary) 14%,transparent);color:var(--color-foreground);font-weight:700}
+  /* ---- sidebar: no filled active state, just a left rule + weight ---- */
+  .sidebar{padding-top:4px;position:sticky;top:90px}
+  .sidebar .brand{display:flex;align-items:center;gap:10px;padding:0 0 22px;font-weight:700;font-size:15px;border-bottom:1px solid var(--border);margin-bottom:14px}
+  .sidebar .brand i{width:8px;height:8px;border-radius:50%;background:var(--color-primary);display:block}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:8px 0 8px 12px;border-left:2px solid transparent;font-size:13px;font-weight:500;color:var(--color-muted-foreground);cursor:default}
+  .nav-item svg{width:15px;height:15px;flex:none;opacity:.8}
+  .nav-item.active{border-color:var(--color-primary);color:var(--color-foreground);font-weight:700}
 
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
-  @media (max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}}
-  .kpi{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px}
-  .kpi .label{font-size:12px;color:var(--color-muted-foreground);font-weight:600}
-  .kpi .value{font-size:26px;font-weight:700;margin-top:6px;letter-spacing:-.02em}
-  .kpi .delta{font-size:11.5px;margin-top:4px;font-weight:600}
-  .kpi .delta.up{color:var(--success)} .kpi .delta.down{color:var(--danger)}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-bottom:30px;border:1px solid var(--border);border-radius:4px}
+  .kpi{padding:18px 20px;border-inline-start:1px solid var(--border)}
+  .kpi:first-child{border-inline-start:0}
+  @media (max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.kpi:nth-child(3){border-inline-start:0}}
+  .kpi .label{font-size:11px;color:var(--color-muted-foreground);font-weight:600;letter-spacing:.03em;text-transform:uppercase}
+  .kpi .value{font-weight:200;font-size:28px;margin-top:8px;letter-spacing:-.02em}
+  .kpi .value b{font-weight:800}
+  .kpi .delta{font-size:11.5px;margin-top:6px;font-weight:600;color:var(--color-muted-foreground)}
+  .kpi .delta.up::before{content:"↑ ";color:var(--color-primary)}
+  .kpi .delta.down::before{content:"↓ "}
 
-  .panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px 20px;margin-bottom:18px}
-  .panel h3{margin:0 0 14px;font-size:14.5px;font-weight:700}
-  .panel .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .panel{border:1px solid var(--border);border-radius:4px;padding:20px 22px;margin-bottom:22px}
+  .panel h3{margin:0 0 16px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+  .panel .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
   .panel .panel-head h3{margin:0}
-  .chip{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:999px;background:color-mix(in oklab,var(--color-foreground) 6%,transparent);color:var(--color-muted-foreground)}
+  .chip{font-size:11px;font-weight:600;color:var(--color-muted-foreground);letter-spacing:.02em}
 
-  .bars{display:flex;align-items:flex-end;gap:8px;height:120px}
-  .bars .bar{flex:1;background:linear-gradient(var(--color-primary),color-mix(in oklab,var(--color-primary) 55%,transparent));border-radius:6px 6px 2px 2px}
+  .bars{display:flex;align-items:flex-end;gap:7px;height:120px}
+  .bars .bar{flex:1;background:var(--color-foreground);opacity:.12;border-radius:1px}
+  .bars .bar.hi{opacity:1;background:var(--color-primary)}
 
   table{width:100%;border-collapse:collapse;font-size:13px}
-  th{text-align:start;color:var(--color-muted-foreground);font-weight:600;font-size:11.5px;padding:8px 10px;border-bottom:1px solid var(--border)}
-  td{padding:11px 10px;border-bottom:1px solid var(--border)}
+  th{text-align:start;color:var(--color-muted-foreground);font-weight:600;font-size:11px;letter-spacing:.03em;text-transform:uppercase;padding:9px 10px;border-bottom:1px solid var(--border)}
+  td{padding:12px 10px;border-bottom:1px solid var(--border)}
   tr:last-child td{border-bottom:0}
-  .status{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px}
-  .status.active{background:color-mix(in oklab,var(--success) 16%,transparent);color:var(--success)}
-  .status.trial{background:color-mix(in oklab,var(--warning) 18%,transparent);color:var(--warning)}
-  .status.paused{background:color-mix(in oklab,var(--danger) 14%,transparent);color:var(--danger)}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-inline-end:7px}
+  .status{font-size:11.5px;font-weight:600}
 
-  .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
+  .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:22px}
   @media (max-width:900px){.grid2{grid-template-columns:1fr}}
 
-  .dish-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+  /* dish rows: the accent carries the plate, like dsh-badge, no emoji */
+  .dish-row{display:flex;align-items:center;gap:13px;padding:11px 0;border-bottom:1px solid var(--border)}
   .dish-row:last-child{border-bottom:0}
-  .dish-plate{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:19px;flex:none}
+  .dish-plate{width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px}
   .dish-row .meta{flex:1;min-width:0}
-  .dish-row .meta b{display:block;font-size:13px}
+  .dish-row .meta b{display:block;font-size:13px;font-weight:600}
   .dish-row .meta span{font-size:11.5px;color:var(--color-muted-foreground)}
-  .dish-row .count{font-size:12.5px;font-weight:700;color:var(--color-primary)}
+  .dish-row .count{font-weight:200;font-size:19px}
 
-  .map-ph{height:220px;border-radius:14px;background:
-    radial-gradient(circle at 25% 30%, color-mix(in oklab,var(--color-primary) 25%,transparent), transparent 45%),
-    radial-gradient(circle at 70% 60%, color-mix(in oklab,var(--color-primary) 18%,transparent), transparent 50%),
-    color-mix(in oklab,var(--color-foreground) 4%,var(--color-background));
-    border:1px solid var(--border);position:relative;overflow:hidden}
-  .map-ph .pin{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--color-primary);box-shadow:0 0 0 5px color-mix(in oklab,var(--color-primary) 25%,transparent)}
+  .map-ph{height:200px;border-radius:4px;border:1px solid var(--border);position:relative;overflow:hidden;
+    background-image:linear-gradient(color-mix(in oklab,var(--color-foreground) 5%,transparent) 1px, transparent 1px),linear-gradient(90deg,color-mix(in oklab,var(--color-foreground) 5%,transparent) 1px, transparent 1px);
+    background-size:28px 28px; background-color:var(--sidebar)}
+  .map-ph .pin{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--color-primary)}
 
-  .search-bar{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:10px 16px;margin-bottom:14px}
+  .search-bar{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:4px;padding:11px 16px;margin-bottom:16px}
   .search-bar input{border:0;background:none;outline:none;flex:1;font:inherit;color:var(--color-foreground)}
-  .search-bar svg{width:17px;height:17px;color:var(--color-muted-foreground);flex:none}
-  .chips-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-  .chip-pill{font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--color-muted-foreground)}
-  .chip-pill.on{background:var(--color-primary);border-color:var(--color-primary);color:#fff}
+  .search-bar svg{width:16px;height:16px;color:var(--color-muted-foreground);flex:none}
+  .chips-row{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:22px;border-bottom:1px solid var(--border);padding-bottom:14px}
+  .chip-pill{font-size:12px;font-weight:600;color:var(--color-muted-foreground);letter-spacing:.02em;cursor:default}
+  .chip-pill.on{color:var(--color-foreground);border-bottom:2px solid var(--color-primary);padding-bottom:14px;margin-bottom:-15px}
 
-  .r-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .r-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
   @media (max-width:900px){.r-cards{grid-template-columns:repeat(2,1fr)}}
   @media (max-width:600px){.r-cards{grid-template-columns:1fr}}
-  .r-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden}
-  .r-cover{height:110px;position:relative}
-  .r-cover .badge{position:absolute;top:10px;inset-inline-end:10px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;display:flex;align-items:center;gap:4px}
-  .r-body{padding:13px 14px}
-  .r-body b{font-size:14px}
-  .r-body .sub{font-size:12px;color:var(--color-muted-foreground);margin-top:2px}
-  .r-body .foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12px;color:var(--color-muted-foreground)}
+  .r-card{border:1px solid var(--border);border-radius:4px;overflow:hidden}
+  .r-cover{height:86px;position:relative;display:flex;align-items:flex-end;padding:9px}
+  .r-cover .badge{background:#fff;color:#1f1a16;font-size:11px;font-weight:700;padding:3px 9px;border-radius:3px}
+  .r-body{padding:14px 15px}
+  .r-body b{font-size:14px;font-weight:700}
+  .r-body .sub{font-size:11.5px;color:var(--color-muted-foreground);margin-top:3px}
+  .r-body .foot{display:flex;justify-content:space-between;align-items:center;margin-top:11px;font-size:12px;color:var(--color-muted-foreground);border-top:1px solid var(--border);padding-top:9px}
 
-  .legend{display:flex;gap:16px;font-size:11.5px;color:var(--color-muted-foreground);margin-top:10px}
+  .legend{display:flex;gap:16px;font-size:11.5px;color:var(--color-muted-foreground);margin-top:12px}
   .legend span{display:inline-flex;align-items:center;gap:6px}
-  .legend i{width:8px;height:8px;border-radius:50%;background:var(--color-primary);display:inline-block}
+  .legend i{width:7px;height:7px;border-radius:50%;background:var(--color-primary);display:inline-block}
 
   /* ================= GIS intelligence screen ================= */
-  .gis-layout{display:grid;grid-template-columns:250px 1fr 260px;gap:18px;align-items:start}
+  .gis-layout{display:grid;grid-template-columns:230px 1fr 250px;gap:22px;align-items:start}
   @media (max-width:1150px){.gis-layout{grid-template-columns:1fr;}}
 
-  .gis-tools{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;position:sticky;top:78px}
-  .gis-tools h4{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--color-muted-foreground);font-weight:700}
-  .gis-tool{display:flex;align-items:center;gap:10px;width:100%;text-align:start;appearance:none;border:1px solid transparent;background:none;color:var(--color-foreground);font:inherit;font-size:13px;font-weight:600;padding:10px 10px;border-radius:12px;cursor:pointer;margin:4px 0}
-  .gis-tool svg{width:16px;height:16px;flex:none;color:var(--color-muted-foreground)}
-  .gis-tool:hover{background:color-mix(in oklab,var(--color-foreground) 5%,transparent)}
-  .gis-tool.on{background:color-mix(in oklab,var(--color-primary) 14%,transparent);border-color:color-mix(in oklab,var(--color-primary) 35%,transparent)}
-  .gis-tool.on svg{color:var(--color-primary)}
-  .gis-tool .tag{margin-inline-start:auto;font-size:10px;font-weight:700;color:var(--color-primary);opacity:0;}
+  .gis-tools{position:sticky;top:90px}
+  .gis-tools h4{margin:0 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--color-muted-foreground);font-weight:700}
+  .gis-tool{display:flex;align-items:center;gap:10px;width:100%;text-align:start;appearance:none;border:0;border-left:2px solid transparent;background:none;color:var(--color-muted-foreground);font:inherit;font-size:13px;font-weight:600;padding:8px 0 8px 12px;cursor:pointer}
+  .gis-tool svg{width:15px;height:15px;flex:none}
+  .gis-tool.on{border-color:var(--color-primary);color:var(--color-foreground)}
+  .gis-tool .tag{margin-inline-start:auto;font-size:9.5px;font-weight:700;letter-spacing:.03em;color:var(--color-primary);opacity:0}
   .gis-tool.on .tag{opacity:1}
-  .gis-divider{height:1px;background:var(--border);margin:12px 0}
+  .gis-divider{height:1px;background:var(--border);margin:16px 0}
 
-  .gis-map-wrap{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:14px;}
-  .gis-map-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
-  .gis-map-head .seg{display:flex;gap:4px;background:color-mix(in oklab,var(--color-foreground) 5%,transparent);border-radius:999px;padding:3px}
-  .gis-map-head .seg button{appearance:none;border:0;background:none;font:inherit;font-size:12px;font-weight:600;color:var(--color-muted-foreground);padding:6px 12px;border-radius:999px;cursor:pointer}
-  .gis-map-head .seg button.on{background:var(--card);color:var(--color-foreground);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+  .gis-map-wrap{border:1px solid var(--border);border-radius:4px;padding:16px}
+  .gis-map-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+  .gis-map-head .seg{display:flex;gap:16px}
+  .gis-map-head .seg button{appearance:none;border:0;background:none;font:inherit;font-size:11.5px;font-weight:600;letter-spacing:.02em;color:var(--color-muted-foreground);padding:0 0 4px;cursor:pointer;border-bottom:2px solid transparent}
+  .gis-map-head .seg button.on{color:var(--color-foreground);border-color:var(--color-primary)}
 
-  .gis-map{position:relative;height:560px;border-radius:16px;overflow:hidden;border:1px solid var(--border);
-    background:
-      radial-gradient(circle at 20% 25%, color-mix(in oklab,var(--danger) 30%,transparent), transparent 40%),
-      radial-gradient(circle at 42% 55%, color-mix(in oklab,var(--warning) 32%,transparent), transparent 42%),
-      radial-gradient(circle at 68% 35%, color-mix(in oklab,var(--color-primary) 32%,transparent), transparent 42%),
-      radial-gradient(circle at 78% 70%, color-mix(in oklab,var(--success) 26%,transparent), transparent 42%),
-      linear-gradient(color-mix(in oklab,var(--color-foreground) 4%,var(--color-background)), color-mix(in oklab,var(--color-foreground) 7%,var(--color-background)));
-  }
-  .gis-map::before{content:"";position:absolute;inset:0;background-image:linear-gradient(color-mix(in oklab,var(--color-foreground) 6%,transparent) 1px, transparent 1px),linear-gradient(90deg,color-mix(in oklab,var(--color-foreground) 6%,transparent) 1px, transparent 1px);background-size:36px 36px;opacity:.5}
-  .gis-pin{position:absolute;width:11px;height:11px;border-radius:50%;background:var(--color-primary);box-shadow:0 0 0 6px color-mix(in oklab,var(--color-primary) 22%,transparent);z-index:3}
-  .gis-pin.rival{background:var(--danger);box-shadow:0 0 0 6px color-mix(in oklab,var(--danger) 20%,transparent)}
-  .gis-ring{position:absolute;border-radius:50%;border:1.5px dashed color-mix(in oklab,var(--color-primary) 55%,transparent);transform:translate(-50%,-50%);z-index:2}
-  .gis-ring.r2{border-style:solid;border-color:color-mix(in oklab,var(--color-primary) 22%,transparent)}
-  .gis-callout{position:absolute;transform:translate(-50%,calc(-100% - 14px));background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;box-shadow:0 10px 30px -10px rgba(0,0,0,.3);min-width:168px;z-index:4}
-  .gis-callout .score{font-size:20px;font-weight:800;color:var(--success)}
-  .gis-callout .lbl{font-size:10.5px;color:var(--color-muted-foreground);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-  .gis-map .zoom{position:absolute;bottom:14px;inset-inline-end:14px;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;z-index:5}
-  .gis-map .zoom button{appearance:none;border:0;background:none;width:34px;height:34px;font-size:16px;font-weight:700;color:var(--color-foreground);cursor:pointer}
+  .gis-map{position:relative;height:560px;border-radius:2px;overflow:hidden;border:1px solid var(--border);background:var(--sidebar);
+    background-image:linear-gradient(color-mix(in oklab,var(--color-foreground) 5%,transparent) 1px, transparent 1px),linear-gradient(90deg,color-mix(in oklab,var(--color-foreground) 5%,transparent) 1px, transparent 1px);
+    background-size:32px 32px;}
+  .gis-pin{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--color-primary);z-index:3}
+  .gis-pin.rival{width:6px;height:6px;background:var(--color-muted-foreground)}
+  .gis-ring{position:absolute;border-radius:50%;border:1px solid color-mix(in oklab,var(--color-primary) 40%,transparent);transform:translate(-50%,-50%);z-index:2}
+  .gis-ring.r2{border-style:dashed}
+  .gis-callout{position:absolute;transform:translate(-50%,calc(-100% - 14px));background:var(--card);border:1px solid var(--border);padding:9px 12px;min-width:150px;z-index:4}
+  .gis-callout .score{font-weight:200;font-size:22px}
+  .gis-callout .score b{font-weight:800}
+  .gis-callout .lbl{font-size:10px;color:var(--color-muted-foreground);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  .gis-map .zoom{position:absolute;bottom:16px;inset-inline-end:16px;display:flex;flex-direction:column;border:1px solid var(--border);background:var(--card);z-index:5}
+  .gis-map .zoom button{appearance:none;border:0;background:none;width:30px;height:30px;font-size:15px;font-weight:700;color:var(--color-foreground);cursor:pointer}
   .gis-map .zoom button:first-child{border-bottom:1px solid var(--border)}
-  .gis-map .scale{position:absolute;bottom:14px;inset-inline-start:14px;background:color-mix(in oklab,var(--card) 85%,transparent);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:10.5px;font-weight:600;color:var(--color-muted-foreground);z-index:5}
+  .gis-map .scale{position:absolute;bottom:16px;inset-inline-start:16px;background:var(--card);border:1px solid var(--border);padding:4px 10px;font-size:10.5px;font-weight:600;color:var(--color-muted-foreground);z-index:5}
 
-  .gis-side{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;position:sticky;top:78px}
-  .gis-side h4{margin:0 0 10px;font-size:13px;font-weight:700}
-  .gis-stat{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+  .gis-side{position:sticky;top:90px}
+  .gis-side h4{margin:18px 0 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--color-muted-foreground)}
+  .gis-stat{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--border);font-size:12.5px}
   .gis-stat:last-child{border-bottom:0}
-  .gis-stat b{font-size:14px}
-  .gis-side .score-badge{display:flex;align-items:center;justify-content:center;flex-direction:column;background:color-mix(in oklab,var(--success) 12%,transparent);border-radius:14px;padding:16px;margin-bottom:12px}
-  .gis-side .score-badge .num{font-size:30px;font-weight:800;color:var(--success)}
-  .gis-side .score-badge .cap{font-size:11px;color:var(--color-muted-foreground);font-weight:600;margin-top:2px}
-  .gis-export{width:100%;margin-top:12px;appearance:none;border:0;background:var(--color-primary);color:#fff;font:inherit;font-size:13px;font-weight:700;padding:11px;border-radius:12px;cursor:pointer}
+  .gis-stat b{font-weight:700;font-size:14px}
+  .gis-side .score-badge{border:1px solid var(--border);padding:16px}
+  .gis-side .score-badge .num{font-weight:200;font-size:36px;letter-spacing:-.02em}
+  .gis-side .score-badge .num b{font-weight:800;color:var(--color-primary)}
+  .gis-side .score-badge .cap{font-size:11px;color:var(--color-muted-foreground);font-weight:600;margin-top:4px;text-transform:uppercase;letter-spacing:.03em}
+  .gis-export{width:100%;margin-top:18px;appearance:none;border:1px solid var(--color-foreground);background:none;color:var(--color-foreground);font:inherit;font-size:12.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:12px;cursor:pointer;transition:background .2s,color .2s}
+  .gis-export:hover{background:var(--color-foreground);color:var(--color-background)}
 </style>
 </head>
 <body>
 
   <div class="controls">
     <button type="button" id="rtlBtn" title="English / العربية">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 4 6 4 9s-1.5 6.3-4 9c-2.5-2.7-4-6-4-9s1.5-6.3 4-9z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 4 6 4 9s-1.5 6.3-4 9c-2.5-2.7-4-6-4-9s1.5-6.3 4-9z"/></svg>
     </button>
     <button type="button" id="darkBtn" title="Light / Dark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
     </button>
   </div>
 
@@ -190,25 +205,25 @@
     <div class="layout">
       <aside class="sidebar">
         <div class="brand"><i></i><span data-ar="لوحة المنصة" data-en="Platform Console">لوحة المنصة</span></div>
-        <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span data-ar="الرئيسية" data-en="Dashboard">الرئيسية</span></div>
-        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg><span data-ar="المطاعم" data-en="Restaurants">المطاعم</span></div>
-        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="8" r="3.4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span data-ar="المستخدمون" data-en="Users">المستخدمون</span></div>
-        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg><span data-ar="الاشتراكات" data-en="Subscriptions">الاشتراكات</span></div>
-        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 2v20M17 6.5c0-1.7-2.2-3-5-3s-5 1.3-5 3 2.2 2.6 5 3 5 1.3 5 3-2.2 3-5 3-5-1.3-5-3"/></svg><span data-ar="المدفوعات" data-en="Payments">المدفوعات</span></div>
-        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M4 19h16M7 19v-6M12 19V5M17 19v-9"/></svg><span data-ar="الإدارة المالية" data-en="Financial">الإدارة المالية</span></div>
-        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-ar="ذكاء GIS" data-en="GIS Intelligence">ذكاء GIS</span></div>
-        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M4 4v16h16"/><path d="M8 15l3-4 3 2 4-6"/></svg><span data-ar="التحليلات" data-en="Analytics">التحليلات</span></div>
-        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 2l2.4 5.1 5.6.6-4.1 3.9 1.1 5.6L12 14.8 6.9 17.2 8 11.6 4 7.7l5.6-.6z"/></svg><span data-ar="خدمات AI" data-en="AI Services">خدمات AI</span></div>
-        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M7 3h7l5 5v13H7z"/><path d="M8 12h8M8 16h8"/></svg><span data-ar="التقارير" data-en="Reports">التقارير</span></div>
-        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg><span data-ar="الإعدادات" data-en="Settings">الإعدادات</span></div>
+        <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span data-ar="الرئيسية" data-en="Dashboard">الرئيسية</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg><span data-ar="المطاعم" data-en="Restaurants">المطاعم</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="8" r="3.4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span data-ar="المستخدمون" data-en="Users">المستخدمون</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg><span data-ar="الاشتراكات" data-en="Subscriptions">الاشتراكات</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2v20M17 6.5c0-1.7-2.2-3-5-3s-5 1.3-5 3 2.2 2.6 5 3 5 1.3 5 3-2.2 3-5 3-5-1.3-5-3"/></svg><span data-ar="المدفوعات" data-en="Payments">المدفوعات</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 19h16M7 19v-6M12 19V5M17 19v-9"/></svg><span data-ar="الإدارة المالية" data-en="Financial">الإدارة المالية</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-ar="ذكاء GIS" data-en="GIS Intelligence">ذكاء GIS</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 4v16h16"/><path d="M8 15l3-4 3 2 4-6"/></svg><span data-ar="التحليلات" data-en="Analytics">التحليلات</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2l2.4 5.1 5.6.6-4.1 3.9 1.1 5.6L12 14.8 6.9 17.2 8 11.6 4 7.7l5.6-.6z"/></svg><span data-ar="خدمات AI" data-en="AI Services">خدمات AI</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M7 3h7l5 5v13H7z"/><path d="M8 12h8M8 16h8"/></svg><span data-ar="التقارير" data-en="Reports">التقارير</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg><span data-ar="الإعدادات" data-en="Settings">الإعدادات</span></div>
       </aside>
 
       <main>
         <div class="kpis">
-          <div class="kpi"><div class="label" data-ar="إجمالي المطاعم" data-en="Total restaurants">إجمالي المطاعم</div><div class="value">1,284</div><div class="delta up" data-ar="+38 هذا الشهر" data-en="+38 this month">+38 هذا الشهر</div></div>
-          <div class="kpi"><div class="label" data-ar="مستخدمون نشطون" data-en="Active users">مستخدمون نشطون</div><div class="value">96,410</div><div class="delta up">+6.2%</div></div>
-          <div class="kpi"><div class="label" data-ar="طلبات اليوم" data-en="Orders today">طلبات اليوم</div><div class="value">22,740</div><div class="delta up">+3.1%</div></div>
-          <div class="kpi"><div class="label" data-ar="إيراد المنصة" data-en="Platform revenue">إيراد المنصة</div><div class="value">$184K</div><div class="delta down">-1.4%</div></div>
+          <div class="kpi"><div class="label" data-ar="إجمالي المطاعم" data-en="Total restaurants">إجمالي المطاعم</div><div class="value">1,284</div><div class="delta up" data-ar="38 هذا الشهر" data-en="38 this month">38 هذا الشهر</div></div>
+          <div class="kpi"><div class="label" data-ar="مستخدمون نشطون" data-en="Active users">مستخدمون نشطون</div><div class="value">96,410</div><div class="delta up">6.2%</div></div>
+          <div class="kpi"><div class="label" data-ar="طلبات اليوم" data-en="Orders today">طلبات اليوم</div><div class="value">22,740</div><div class="delta up">3.1%</div></div>
+          <div class="kpi"><div class="label" data-ar="إيراد المنصة" data-en="Platform revenue">إيراد المنصة</div><div class="value">$184K</div><div class="delta down">1.4%</div></div>
         </div>
 
         <div class="grid2">
@@ -239,10 +254,10 @@
               <th data-ar="الحالة" data-en="Status">الحالة</th>
             </tr></thead>
             <tbody>
-              <tr><td>Ember Counter</td><td>4</td><td>Enterprise</td><td>$18,400</td><td><span class="status active" data-ar="نشط" data-en="Active">نشط</span></td></tr>
-              <tr><td>Saltwater Kitchen</td><td>2</td><td>Professional</td><td>$9,120</td><td><span class="status active" data-ar="نشط" data-en="Active">نشط</span></td></tr>
-              <tr><td>Pergola Café</td><td>1</td><td>Basic</td><td>$2,310</td><td><span class="status trial" data-ar="تجريبي" data-en="Trial">تجريبي</span></td></tr>
-              <tr><td>Morning Room</td><td>3</td><td>Professional</td><td>$7,850</td><td><span class="status paused" data-ar="متوقف" data-en="Paused">متوقف</span></td></tr>
+              <tr><td>Ember Counter</td><td>4</td><td>Enterprise</td><td>$18,400</td><td><span class="status"><i class="dot" style="background:var(--a1)"></i><span data-ar="نشط" data-en="Active">نشط</span></span></td></tr>
+              <tr><td>Saltwater Kitchen</td><td>2</td><td>Professional</td><td>$9,120</td><td><span class="status"><i class="dot" style="background:var(--a3)"></i><span data-ar="نشط" data-en="Active">نشط</span></span></td></tr>
+              <tr><td>Pergola Café</td><td>1</td><td>Basic</td><td>$2,310</td><td><span class="status"><i class="dot" style="background:var(--a4)"></i><span data-ar="تجريبي" data-en="Trial">تجريبي</span></span></td></tr>
+              <tr><td>Morning Room</td><td>3</td><td>Professional</td><td>$7,850</td><td><span class="status"><i class="dot" style="background:var(--color-muted-foreground)"></i><span data-ar="متوقف" data-en="Paused">متوقف</span></span></td></tr>
             </tbody>
           </table>
         </div>
@@ -273,19 +288,19 @@
 
       <main>
         <div class="kpis">
-          <div class="kpi"><div class="label" data-ar="مبيعات اليوم" data-en="Today's sales">مبيعات اليوم</div><div class="value">$4,920</div><div class="delta up">+12%</div></div>
-          <div class="kpi"><div class="label" data-ar="عدد الطلبات" data-en="Orders">عدد الطلبات</div><div class="value">212</div><div class="delta up">+8%</div></div>
-          <div class="kpi"><div class="label" data-ar="متوسط الطلب" data-en="Avg. order">متوسط الطلب</div><div class="value">$23.2</div><div class="delta up">+2%</div></div>
-          <div class="kpi"><div class="label" data-ar="عملاء جدد" data-en="New customers">عملاء جدد</div><div class="value">34</div><div class="delta down">-3%</div></div>
+          <div class="kpi"><div class="label" data-ar="مبيعات اليوم" data-en="Today's sales">مبيعات اليوم</div><div class="value">$4,920</div><div class="delta up">12%</div></div>
+          <div class="kpi"><div class="label" data-ar="عدد الطلبات" data-en="Orders">عدد الطلبات</div><div class="value">212</div><div class="delta up">8%</div></div>
+          <div class="kpi"><div class="label" data-ar="متوسط الطلب" data-en="Avg. order">متوسط الطلب</div><div class="value">$23.2</div><div class="delta up">2%</div></div>
+          <div class="kpi"><div class="label" data-ar="عملاء جدد" data-en="New customers">عملاء جدد</div><div class="value">34</div><div class="delta down">3%</div></div>
         </div>
 
         <div class="grid2">
           <div class="panel">
             <div class="panel-head"><h3 data-ar="الأطباق الأكثر مبيعًا" data-en="Best-selling dishes">الأطباق الأكثر مبيعًا</h3><span class="chip" data-ar="هذا الأسبوع" data-en="This week">هذا الأسبوع</span></div>
-            <div class="dish-row"><div class="dish-plate" style="background:color-mix(in oklab,#f6a37c 22%,var(--card))">🥩</div><div class="meta"><b>Char grill Ribeye</b><span>Ember Counter · Harbour St</span></div><div class="count">96</div></div>
-            <div class="dish-row"><div class="dish-plate" style="background:color-mix(in oklab,#9fcbe8 22%,var(--card))">🍳</div><div class="meta"><b>Sunny Side up</b><span>Morning Room</span></div><div class="count">120</div></div>
-            <div class="dish-row"><div class="dish-plate" style="background:color-mix(in oklab,#bcd98e 22%,var(--card))">🐠</div><div class="meta"><b>Black lentil Sea bass</b><span>Saltwater Kitchen</span></div><div class="count">88</div></div>
-            <div class="dish-row"><div class="dish-plate" style="background:color-mix(in oklab,#f2a6c6 22%,var(--card))">🐟</div><div class="meta"><b>Garden Salmon</b><span>The Greenhouse Table</span></div><div class="count">71</div></div>
+            <div class="dish-row"><div class="dish-plate" style="background:var(--a1)">4.8</div><div class="meta"><b>Char grill Ribeye</b><span>Ember Counter · Harbour St</span></div><div class="count">96</div></div>
+            <div class="dish-row"><div class="dish-plate" style="background:var(--a4)">4.6</div><div class="meta"><b>Sunny Side up</b><span>Morning Room</span></div><div class="count">120</div></div>
+            <div class="dish-row"><div class="dish-plate" style="background:var(--a3)">4.9</div><div class="meta"><b>Black lentil Sea bass</b><span>Saltwater Kitchen</span></div><div class="count">88</div></div>
+            <div class="dish-row"><div class="dish-plate" style="background:var(--a5)">4.5</div><div class="meta"><b>Garden Salmon</b><span>The Greenhouse Table</span></div><div class="count">71</div></div>
           </div>
           <div class="panel">
             <h3 data-ar="أداء الفروع" data-en="Branch performance">أداء الفروع</h3>
@@ -308,9 +323,9 @@
               <th data-ar="الحالة" data-en="Status">الحالة</th>
             </tr></thead>
             <tbody>
-              <tr><td>#10482</td><td>Lina K.</td><td>Harbour St</td><td>$41.00</td><td><span class="status active" data-ar="جاهز" data-en="Ready">جاهز</span></td></tr>
-              <tr><td>#10481</td><td>Omar S.</td><td>Old Town</td><td>$18.50</td><td><span class="status trial" data-ar="تحضير" data-en="Preparing">تحضير</span></td></tr>
-              <tr><td>#10480</td><td>Maya R.</td><td>Harbour St</td><td>$63.20</td><td><span class="status active" data-ar="تم التوصيل" data-en="Delivered">تم التوصيل</span></td></tr>
+              <tr><td>#10482</td><td>Lina K.</td><td>Harbour St</td><td>$41.00</td><td><span class="status"><i class="dot" style="background:var(--a1)"></i><span data-ar="جاهز" data-en="Ready">جاهز</span></span></td></tr>
+              <tr><td>#10481</td><td>Omar S.</td><td>Old Town</td><td>$18.50</td><td><span class="status"><i class="dot" style="background:var(--a4)"></i><span data-ar="تحضير" data-en="Preparing">تحضير</span></span></td></tr>
+              <tr><td>#10480</td><td>Maya R.</td><td>Harbour St</td><td>$63.20</td><td><span class="status"><i class="dot" style="background:var(--color-muted-foreground)"></i><span data-ar="تم التوصيل" data-en="Delivered">تم التوصيل</span></span></td></tr>
             </tbody>
           </table>
         </div>
@@ -325,41 +340,41 @@
       <aside class="gis-tools">
         <h4 data-ar="طبقات الخريطة" data-en="Map layers">طبقات الخريطة</h4>
         <button class="gis-tool on" data-tool="heatmap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
           <span data-ar="خريطة الكثافة الحرارية" data-en="Demand heatmap">خريطة الكثافة الحرارية</span><span class="tag">ON</span>
         </button>
         <button class="gis-tool on" data-tool="competitors">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="8" r="3.4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="8" r="3.4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
           <span data-ar="تحليل المنافسين" data-en="Competitor analysis">تحليل المنافسين</span><span class="tag">ON</span>
         </button>
         <button class="gis-tool" data-tool="suitability">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 2l2.4 5.1 5.6.6-4.1 3.9 1.1 5.6L12 14.8 6.9 17.2 8 11.6 4 7.7l5.6-.6z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2l2.4 5.1 5.6.6-4.1 3.9 1.1 5.6L12 14.8 6.9 17.2 8 11.6 4 7.7l5.6-.6z"/></svg>
           <span data-ar="ملاءمة الموقع" data-en="Site suitability score">ملاءمة الموقع</span><span class="tag">ON</span>
         </button>
         <button class="gis-tool" data-tool="drivetime">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
           <span data-ar="نطاق وقت الوصول" data-en="Drive-time radius">نطاق وقت الوصول</span><span class="tag">ON</span>
         </button>
         <button class="gis-tool" data-tool="demographics">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
           <span data-ar="البيانات الديموغرافية" data-en="Demographics overlay">البيانات الديموغرافية</span><span class="tag">ON</span>
         </button>
 
         <div class="gis-divider"></div>
         <h4 data-ar="المقاييس" data-en="Filters">المقاييس</h4>
         <button class="gis-tool" data-tool="footfall">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M4 19h16M7 19v-6M12 19V5M17 19v-9"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 19h16M7 19v-6M12 19V5M17 19v-9"/></svg>
           <span data-ar="حركة المشاة" data-en="Foot traffic">حركة المشاة</span><span class="tag">ON</span>
         </button>
         <button class="gis-tool" data-tool="rent">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 2v20M17 6.5c0-1.7-2.2-3-5-3s-5 1.3-5 3 2.2 2.6 5 3 5 1.3 5 3-2.2 3-5 3-5-1.3-5-3"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2v20M17 6.5c0-1.7-2.2-3-5-3s-5 1.3-5 3 2.2 2.6 5 3 5 1.3 5 3-2.2 3-5 3-5-1.3-5-3"/></svg>
           <span data-ar="متوسط الإيجار" data-en="Avg. rent index">متوسط الإيجار</span><span class="tag">ON</span>
         </button>
       </aside>
 
       <div class="gis-map-wrap">
         <div class="gis-map-head">
-          <h3 style="margin:0;font-size:15px" data-ar="تحليل الموقع — وسط المدينة" data-en="Site Analysis — Downtown Core">تحليل الموقع — وسط المدينة</h3>
+          <h3 style="margin:0;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em" data-ar="تحليل الموقع — وسط المدينة" data-en="Site Analysis — Downtown Core">تحليل الموقع — وسط المدينة</h3>
           <div class="seg">
             <button class="on" data-ar="القمر الصناعي" data-en="Satellite">القمر الصناعي</button>
             <button data-ar="الشارع" data-en="Street">الشارع</button>
@@ -375,14 +390,14 @@
           <div class="gis-pin" style="top:46%;left:47%"></div>
           <div class="gis-callout" style="top:46%;left:47%">
             <div class="lbl" data-ar="نقاط الملاءمة" data-en="Suitability score">نقاط الملاءمة</div>
-            <div class="score">87/100</div>
+            <div class="score"><b>87</b>/100</div>
           </div>
 
           <div class="gis-pin rival" style="top:28%;left:30%"></div>
           <div class="gis-pin rival" style="top:62%;left:66%"></div>
           <div class="gis-pin rival" style="top:70%;left:34%"></div>
-          <div class="gis-pin" style="top:33%;left:68%"></div>
-          <div class="gis-pin" style="top:60%;left:24%"></div>
+          <div class="gis-pin rival" style="top:33%;left:68%"></div>
+          <div class="gis-pin rival" style="top:60%;left:24%"></div>
 
           <div class="zoom"><button type="button">+</button><button type="button">–</button></div>
           <div class="scale" data-ar="نطاق 500 م" data-en="500 m radius">نطاق 500 م</div>
@@ -391,7 +406,7 @@
 
       <aside class="gis-side">
         <div class="score-badge">
-          <div class="num">87</div>
+          <div class="num"><b>87</b>/100</div>
           <div class="cap" data-ar="درجة ملاءمة الموقع" data-en="Site suitability score">درجة ملاءمة الموقع</div>
         </div>
         <h4 data-ar="مؤشرات المنطقة" data-en="Area indicators">مؤشرات المنطقة</h4>
@@ -411,7 +426,7 @@
   <section class="screen" id="screen-customer">
     <div style="max-width:760px;margin:0 auto">
       <div class="search-bar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
         <input id="searchInput" data-ar-ph="ابحث عن مطعم أو نوع طعام…" data-en-ph="Search for a restaurant or cuisine…" placeholder="ابحث عن مطعم أو نوع طعام…" />
       </div>
       <div class="chips-row">
@@ -430,29 +445,29 @@
         </div>
       </div>
 
-      <div class="r-cards" style="margin-top:16px">
+      <div class="r-cards" style="margin-top:18px">
         <div class="r-card">
-          <div class="r-cover" style="background:linear-gradient(135deg,#f6a37c,#efc3a6)"><span class="badge">★ 4.9</span></div>
+          <div class="r-cover" style="background:var(--a1)"><span class="badge">4.9</span></div>
           <div class="r-body"><b>Ember Counter</b><div class="sub" data-ar="مشاوي · Harbour St" data-en="Grill · Harbour St">مشاوي · Harbour St</div><div class="foot"><span data-ar="1.2 كم" data-en="1.2 km">1.2 كم</span><span>$$</span></div></div>
         </div>
         <div class="r-card">
-          <div class="r-cover" style="background:linear-gradient(135deg,#9fcbe8,#cfe6f2)"><span class="badge">★ 4.7</span></div>
+          <div class="r-cover" style="background:var(--a4)"><span class="badge">4.7</span></div>
           <div class="r-body"><b>Morning Room</b><div class="sub" data-ar="فطور · Old Town" data-en="Breakfast · Old Town">فطور · Old Town</div><div class="foot"><span data-ar="0.8 كم" data-en="0.8 km">0.8 كم</span><span>$$</span></div></div>
         </div>
         <div class="r-card">
-          <div class="r-cover" style="background:linear-gradient(135deg,#bcd98e,#dcebc2)"><span class="badge">★ 4.6</span></div>
+          <div class="r-cover" style="background:var(--a3)"><span class="badge">4.6</span></div>
           <div class="r-body"><b>Saltwater Kitchen</b><div class="sub" data-ar="مأكولات بحرية" data-en="Seafood">مأكولات بحرية</div><div class="foot"><span data-ar="2.4 كم" data-en="2.4 km">2.4 كم</span><span>$$$</span></div></div>
         </div>
         <div class="r-card">
-          <div class="r-cover" style="background:linear-gradient(135deg,#f2a6c6,#f6cfdd)"><span class="badge">★ 4.3</span></div>
+          <div class="r-cover" style="background:var(--a2)"><span class="badge">4.3</span></div>
           <div class="r-body"><b>The Greenhouse Table</b><div class="sub" data-ar="صحي · نباتي" data-en="Healthy · Vegetarian">صحي · نباتي</div><div class="foot"><span data-ar="3.1 كم" data-en="3.1 km">3.1 كم</span><span>$$</span></div></div>
         </div>
         <div class="r-card">
-          <div class="r-cover" style="background:linear-gradient(135deg,#f5d26a,#f8e4a8)"><span class="badge">★ 4.5</span></div>
+          <div class="r-cover" style="background:var(--a5)"><span class="badge">4.5</span></div>
           <div class="r-body"><b>Pergola Café</b><div class="sub" data-ar="حلويات · مشروبات" data-en="Desserts · Drinks">حلويات · مشروبات</div><div class="foot"><span data-ar="1.6 كم" data-en="1.6 km">1.6 كم</span><span>$</span></div></div>
         </div>
         <div class="r-card">
-          <div class="r-cover" style="background:linear-gradient(135deg,#e7ded2,#f3ede3)"><span class="badge">★ 4.8</span></div>
+          <div class="r-cover" style="background:var(--a6)"><span class="badge">4.8</span></div>
           <div class="r-body"><b>Saffron House</b><div class="sub" data-ar="عربي · مشاوي" data-en="Arabic · Grill">عربي · مشاوي</div><div class="foot"><span data-ar="2.0 كم" data-en="2.0 km">2.0 كم</span><span>$$</span></div></div>
         </div>
       </div>
@@ -479,7 +494,13 @@
 
   function bars(id, values){
     var el = document.getElementById(id);
-    values.forEach(function(v){ var b = document.createElement("div"); b.className = "bar"; b.style.height = v + "%"; el.appendChild(b); });
+    var max = Math.max.apply(null, values);
+    values.forEach(function(v, i){
+      var b = document.createElement("div");
+      b.className = "bar" + (i === values.length - 1 ? " hi" : "");
+      b.style.height = v + "%";
+      el.appendChild(b);
+    });
   }
   bars("adminBars", [40,55,48,62,58,70,66,74,69,80,76,88]);
   bars("ownerBars", [55,62,48,70,66,58,74]);
