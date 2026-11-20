@@ -43,14 +43,35 @@
   .figure b{font-weight:800}
 
   /* ---- controls: plain icon pair, hairline only, no glass pill ---- */
-  .controls{position:fixed;top:18px;left:18px;z-index:60;display:flex;gap:14px}
-  html[dir="ltr"] .controls{left:auto;right:18px}
-  .controls button{appearance:none;border:0;background:none;color:var(--color-muted-foreground);width:22px;height:22px;display:grid;place-items:center;cursor:pointer}
-  .controls button:hover{color:var(--color-foreground)}
-  .controls svg{width:16px;height:16px}
+  .controls{position:fixed;top:16px;left:16px;z-index:60;display:flex;gap:6px}
+  html[dir="ltr"] .controls{left:auto;right:16px}
+  .controls button{appearance:none;border:0;background:none;color:var(--color-foreground);opacity:.62;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;cursor:pointer;transition:opacity .15s,background .15s}
+  .controls button:hover{opacity:1;background:color-mix(in oklab,var(--color-foreground) 8%,transparent)}
+  .controls svg{width:17px;height:17px}
+  .controls button[hidden]{display:none}
+
+  /* ---- login ---- */
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+  .login-card{width:100%;max-width:368px}
+  .login-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;margin-bottom:46px}
+  .login-brand i{width:8px;height:8px;border-radius:50%;background:var(--color-primary);display:block;flex:none}
+  .login-card .headline{margin:10px 0 34px}
+  .login-field{display:block;margin-bottom:18px}
+  .login-field span{display:block;font-size:11px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--color-muted-foreground);margin-bottom:7px}
+  .login-field input{width:100%;border:0;border-bottom:1px solid var(--border);background:none;padding:9px 0;font:inherit;font-size:14px;color:var(--color-foreground);outline:none;transition:border-color .15s}
+  .login-field input:focus{border-color:var(--color-primary)}
+  .login-row{display:flex;align-items:center;justify-content:space-between;margin:-4px 0 24px;font-size:11.5px;color:var(--color-muted-foreground)}
+  .login-row a{text-decoration:none;border-bottom:1px solid var(--border)}
+  .login-submit{width:100%;margin-top:4px;appearance:none;border:1px solid var(--color-foreground);background:none;color:var(--color-foreground);font:inherit;font-size:12.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:13px;cursor:pointer;transition:background .2s,color .2s}
+  .login-submit:hover{background:var(--color-foreground);color:var(--color-background)}
+  .login-hint{margin-top:18px;font-size:11.5px;color:var(--color-muted-foreground);text-align:center}
+
+  /* ---- generic sidebar-section placeholder, shares KPI/table styling ---- */
+  .section-view .headline{margin-bottom:26px}
 
   /* ---- role switch: underline tabs, weight contrast instead of filled pills ---- */
   .role-tabs{position:sticky;top:0;z-index:40;display:flex;gap:28px;justify-content:center;padding:22px 0 14px;background:var(--color-background);border-bottom:1px solid var(--border)}
+  .role-tabs[hidden]{display:none}
   .role-tab{appearance:none;border:0;border-bottom:2px solid transparent;background:none;color:var(--color-muted-foreground);font:inherit;font-size:12.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;padding:0 0 12px;cursor:pointer;transition:color .2s,border-color .2s}
   .role-tab[aria-selected="true"]{color:var(--color-foreground);border-color:var(--color-primary)}
 
@@ -63,8 +84,9 @@
   .sidebar{padding-top:4px;position:sticky;top:90px}
   .sidebar .brand{display:flex;align-items:center;gap:10px;padding:0 0 22px;font-weight:700;font-size:15px;border-bottom:1px solid var(--border);margin-bottom:14px}
   .sidebar .brand i{width:8px;height:8px;border-radius:50%;background:var(--color-primary);display:block}
-  .nav-item{display:flex;align-items:center;gap:11px;padding:8px 0 8px 12px;border-left:2px solid transparent;font-size:13px;font-weight:500;color:var(--color-muted-foreground);cursor:default}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:8px 0 8px 12px;border-left:2px solid transparent;font-size:13px;font-weight:500;color:var(--color-muted-foreground);cursor:pointer;transition:color .15s,border-color .15s}
   .nav-item svg{width:15px;height:15px;flex:none;opacity:.8}
+  .nav-item:hover{color:var(--color-foreground)}
   .nav-item.active{border-color:var(--color-primary);color:var(--color-foreground);font-weight:700}
 
   .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-bottom:30px;border:1px solid var(--border);border-radius:4px}
@@ -188,12 +210,43 @@
     <button type="button" id="rtlBtn" title="English / العربية">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 4 6 4 9s-1.5 6.3-4 9c-2.5-2.7-4-6-4-9s1.5-6.3 4-9z"/></svg>
     </button>
-    <button type="button" id="darkBtn" title="Light / Dark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+    <button type="button" id="darkBtn" title="Light / Dark"></button>
+    <button type="button" id="logoutBtn" hidden title="Sign out">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
     </button>
   </div>
 
-  <nav class="role-tabs" role="tablist" aria-label="Role">
+  <!-- ================= LOGIN ================= -->
+  <section class="screen active" id="screen-login">
+    <div class="login-wrap">
+      <div class="login-card">
+        <div class="login-brand"><i></i><span data-ar="منصة المطاعم" data-en="Restaurant Platform">منصة المطاعم</span></div>
+        <div class="eyebrow" data-ar="الدخول إلى المنصة" data-en="Platform sign-in">الدخول إلى المنصة</div>
+        <h2 class="headline">
+          <span class="thin" data-ar="مرحبًا بعودتك" data-en="Welcome back">مرحبًا بعودتك</span>
+          <span class="heavy" data-ar="سجّل الدخول لمتابعة العمل" data-en="Sign in to continue">سجّل الدخول لمتابعة العمل</span>
+        </h2>
+
+        <label class="login-field">
+          <span data-ar="البريد الإلكتروني" data-en="Email">البريد الإلكتروني</span>
+          <input type="email" id="loginEmail" value="admin@platform.io" />
+        </label>
+        <label class="login-field">
+          <span data-ar="كلمة المرور" data-en="Password">كلمة المرور</span>
+          <input type="password" id="loginPassword" value="••••••••" />
+        </label>
+        <div class="login-row">
+          <span data-ar="نسيت كلمة المرور؟" data-en="Forgot password?">نسيت كلمة المرور؟</span>
+          <a href="#" data-ar="تواصل مع الدعم" data-en="Contact support">تواصل مع الدعم</a>
+        </div>
+
+        <button type="button" class="login-submit" id="loginSubmit" data-ar="تسجيل الدخول" data-en="Sign in">تسجيل الدخول</button>
+        <div class="login-hint" data-ar="معاينة تصميم فقط — أي بيانات تعمل" data-en="Design preview only — any details work">معاينة تصميم فقط — أي بيانات تعمل</div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="role-tabs" role="tablist" aria-label="Role" id="roleTabsNav" hidden>
     <button class="role-tab" data-role="admin" aria-selected="true" role="tab">Super Admin</button>
     <button class="role-tab" data-role="owner" aria-selected="false" role="tab">Restaurant Owner</button>
     <button class="role-tab" data-role="gis" aria-selected="false" role="tab">GIS Intelligence</button>
@@ -201,7 +254,7 @@
   </nav>
 
   <!-- ================= SUPER ADMIN ================= -->
-  <section class="screen active" id="screen-admin">
+  <section class="screen" id="screen-admin">
     <div class="layout">
       <aside class="sidebar">
         <div class="brand"><i></i><span data-ar="لوحة المنصة" data-en="Platform Console">لوحة المنصة</span></div>
@@ -219,47 +272,59 @@
       </aside>
 
       <main>
-        <div class="kpis">
-          <div class="kpi"><div class="label" data-ar="إجمالي المطاعم" data-en="Total restaurants">إجمالي المطاعم</div><div class="value">1,284</div><div class="delta up" data-ar="38 هذا الشهر" data-en="38 this month">38 هذا الشهر</div></div>
-          <div class="kpi"><div class="label" data-ar="مستخدمون نشطون" data-en="Active users">مستخدمون نشطون</div><div class="value">96,410</div><div class="delta up">6.2%</div></div>
-          <div class="kpi"><div class="label" data-ar="طلبات اليوم" data-en="Orders today">طلبات اليوم</div><div class="value">22,740</div><div class="delta up">3.1%</div></div>
-          <div class="kpi"><div class="label" data-ar="إيراد المنصة" data-en="Platform revenue">إيراد المنصة</div><div class="value">$184K</div><div class="delta down">1.4%</div></div>
-        </div>
-
-        <div class="grid2">
-          <div class="panel">
-            <div class="panel-head"><h3 data-ar="نمو المبيعات عبر المنصة" data-en="Platform sales growth">نمو المبيعات عبر المنصة</h3><span class="chip" data-ar="آخر 12 أسبوع" data-en="Last 12 weeks">آخر 12 أسبوع</span></div>
-            <div class="bars" id="adminBars"></div>
-            <div class="legend"><span><i></i><span data-ar="إجمالي المبيعات الأسبوعية" data-en="Total weekly sales">إجمالي المبيعات الأسبوعية</span></span></div>
+        <div class="section-view" id="admin-dashboard-view">
+          <div class="kpis">
+            <div class="kpi"><div class="label" data-ar="إجمالي المطاعم" data-en="Total restaurants">إجمالي المطاعم</div><div class="value">1,284</div><div class="delta up" data-ar="38 هذا الشهر" data-en="38 this month">38 هذا الشهر</div></div>
+            <div class="kpi"><div class="label" data-ar="مستخدمون نشطون" data-en="Active users">مستخدمون نشطون</div><div class="value">96,410</div><div class="delta up">6.2%</div></div>
+            <div class="kpi"><div class="label" data-ar="طلبات اليوم" data-en="Orders today">طلبات اليوم</div><div class="value">22,740</div><div class="delta up">3.1%</div></div>
+            <div class="kpi"><div class="label" data-ar="إيراد المنصة" data-en="Platform revenue">إيراد المنصة</div><div class="value">$184K</div><div class="delta down">1.4%</div></div>
           </div>
-          <div class="panel">
-            <h3 data-ar="توزيع المطاعم جغرافيًا" data-en="Restaurants by region">توزيع المطاعم جغرافيًا</h3>
-            <div class="map-ph">
-              <div class="pin" style="top:30%;left:28%"></div>
-              <div class="pin" style="top:52%;left:62%"></div>
-              <div class="pin" style="top:68%;left:40%"></div>
-              <div class="pin" style="top:38%;left:74%"></div>
+
+          <div class="grid2">
+            <div class="panel">
+              <div class="panel-head"><h3 data-ar="نمو المبيعات عبر المنصة" data-en="Platform sales growth">نمو المبيعات عبر المنصة</h3><span class="chip" data-ar="آخر 12 أسبوع" data-en="Last 12 weeks">آخر 12 أسبوع</span></div>
+              <div class="bars" id="adminBars"></div>
+              <div class="legend"><span><i></i><span data-ar="إجمالي المبيعات الأسبوعية" data-en="Total weekly sales">إجمالي المبيعات الأسبوعية</span></span></div>
+            </div>
+            <div class="panel">
+              <h3 data-ar="توزيع المطاعم جغرافيًا" data-en="Restaurants by region">توزيع المطاعم جغرافيًا</h3>
+              <div class="map-ph">
+                <div class="pin" style="top:30%;left:28%"></div>
+                <div class="pin" style="top:52%;left:62%"></div>
+                <div class="pin" style="top:68%;left:40%"></div>
+                <div class="pin" style="top:38%;left:74%"></div>
+              </div>
             </div>
           </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3 data-ar="أحدث المطاعم المسجّلة" data-en="Recently registered restaurants">أحدث المطاعم المسجّلة</h3></div>
+            <table>
+              <thead><tr>
+                <th data-ar="المطعم" data-en="Restaurant">المطعم</th>
+                <th data-ar="الفروع" data-en="Branches">الفروع</th>
+                <th data-ar="الباقة" data-en="Plan">الباقة</th>
+                <th data-ar="الإيراد الشهري" data-en="Monthly revenue">الإيراد الشهري</th>
+                <th data-ar="الحالة" data-en="Status">الحالة</th>
+              </tr></thead>
+              <tbody>
+                <tr><td>Ember Counter</td><td>4</td><td>Enterprise</td><td>$18,400</td><td><span class="status"><i class="dot" style="background:var(--a1)"></i><span data-ar="نشط" data-en="Active">نشط</span></span></td></tr>
+                <tr><td>Saltwater Kitchen</td><td>2</td><td>Professional</td><td>$9,120</td><td><span class="status"><i class="dot" style="background:var(--a3)"></i><span data-ar="نشط" data-en="Active">نشط</span></span></td></tr>
+                <tr><td>Pergola Café</td><td>1</td><td>Basic</td><td>$2,310</td><td><span class="status"><i class="dot" style="background:var(--a4)"></i><span data-ar="تجريبي" data-en="Trial">تجريبي</span></span></td></tr>
+                <tr><td>Morning Room</td><td>3</td><td>Professional</td><td>$7,850</td><td><span class="status"><i class="dot" style="background:var(--color-muted-foreground)"></i><span data-ar="متوقف" data-en="Paused">متوقف</span></span></td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <div class="panel">
-          <div class="panel-head"><h3 data-ar="أحدث المطاعم المسجّلة" data-en="Recently registered restaurants">أحدث المطاعم المسجّلة</h3></div>
-          <table>
-            <thead><tr>
-              <th data-ar="المطعم" data-en="Restaurant">المطعم</th>
-              <th data-ar="الفروع" data-en="Branches">الفروع</th>
-              <th data-ar="الباقة" data-en="Plan">الباقة</th>
-              <th data-ar="الإيراد الشهري" data-en="Monthly revenue">الإيراد الشهري</th>
-              <th data-ar="الحالة" data-en="Status">الحالة</th>
-            </tr></thead>
-            <tbody>
-              <tr><td>Ember Counter</td><td>4</td><td>Enterprise</td><td>$18,400</td><td><span class="status"><i class="dot" style="background:var(--a1)"></i><span data-ar="نشط" data-en="Active">نشط</span></span></td></tr>
-              <tr><td>Saltwater Kitchen</td><td>2</td><td>Professional</td><td>$9,120</td><td><span class="status"><i class="dot" style="background:var(--a3)"></i><span data-ar="نشط" data-en="Active">نشط</span></span></td></tr>
-              <tr><td>Pergola Café</td><td>1</td><td>Basic</td><td>$2,310</td><td><span class="status"><i class="dot" style="background:var(--a4)"></i><span data-ar="تجريبي" data-en="Trial">تجريبي</span></span></td></tr>
-              <tr><td>Morning Room</td><td>3</td><td>Professional</td><td>$7,850</td><td><span class="status"><i class="dot" style="background:var(--color-muted-foreground)"></i><span data-ar="متوقف" data-en="Paused">متوقف</span></span></td></tr>
-            </tbody>
-          </table>
+        <div class="section-view" id="admin-generic-view" style="display:none">
+          <div class="eyebrow" data-ar="لوحة المنصة" data-en="Platform Console">لوحة المنصة</div>
+          <h2 class="headline"><span class="thin" id="admin-generic-sub" data-ar="قسم" data-en="Section">قسم</span><span class="heavy" id="admin-generic-title">—</span></h2>
+          <div class="kpis" id="admin-generic-kpis"></div>
+          <div class="panel">
+            <div class="panel-head"><h3 id="admin-generic-tablehead" data-ar="السجلات" data-en="Records">السجلات</h3></div>
+            <table><thead><tr id="admin-generic-thead"></tr></thead><tbody id="admin-generic-tbody"></tbody></table>
+          </div>
         </div>
       </main>
     </div>
@@ -287,47 +352,59 @@
       </aside>
 
       <main>
-        <div class="kpis">
-          <div class="kpi"><div class="label" data-ar="مبيعات اليوم" data-en="Today's sales">مبيعات اليوم</div><div class="value">$4,920</div><div class="delta up">12%</div></div>
-          <div class="kpi"><div class="label" data-ar="عدد الطلبات" data-en="Orders">عدد الطلبات</div><div class="value">212</div><div class="delta up">8%</div></div>
-          <div class="kpi"><div class="label" data-ar="متوسط الطلب" data-en="Avg. order">متوسط الطلب</div><div class="value">$23.2</div><div class="delta up">2%</div></div>
-          <div class="kpi"><div class="label" data-ar="عملاء جدد" data-en="New customers">عملاء جدد</div><div class="value">34</div><div class="delta down">3%</div></div>
-        </div>
-
-        <div class="grid2">
-          <div class="panel">
-            <div class="panel-head"><h3 data-ar="الأطباق الأكثر مبيعًا" data-en="Best-selling dishes">الأطباق الأكثر مبيعًا</h3><span class="chip" data-ar="هذا الأسبوع" data-en="This week">هذا الأسبوع</span></div>
-            <div class="dish-row"><div class="dish-plate" style="background:var(--a1)">4.8</div><div class="meta"><b>Char grill Ribeye</b><span>Ember Counter · Harbour St</span></div><div class="count">96</div></div>
-            <div class="dish-row"><div class="dish-plate" style="background:var(--a4)">4.6</div><div class="meta"><b>Sunny Side up</b><span>Morning Room</span></div><div class="count">120</div></div>
-            <div class="dish-row"><div class="dish-plate" style="background:var(--a3)">4.9</div><div class="meta"><b>Black lentil Sea bass</b><span>Saltwater Kitchen</span></div><div class="count">88</div></div>
-            <div class="dish-row"><div class="dish-plate" style="background:var(--a5)">4.5</div><div class="meta"><b>Garden Salmon</b><span>The Greenhouse Table</span></div><div class="count">71</div></div>
+        <div class="section-view" id="owner-dashboard-view">
+          <div class="kpis">
+            <div class="kpi"><div class="label" data-ar="مبيعات اليوم" data-en="Today's sales">مبيعات اليوم</div><div class="value">$4,920</div><div class="delta up">12%</div></div>
+            <div class="kpi"><div class="label" data-ar="عدد الطلبات" data-en="Orders">عدد الطلبات</div><div class="value">212</div><div class="delta up">8%</div></div>
+            <div class="kpi"><div class="label" data-ar="متوسط الطلب" data-en="Avg. order">متوسط الطلب</div><div class="value">$23.2</div><div class="delta up">2%</div></div>
+            <div class="kpi"><div class="label" data-ar="عملاء جدد" data-en="New customers">عملاء جدد</div><div class="value">34</div><div class="delta down">3%</div></div>
           </div>
-          <div class="panel">
-            <h3 data-ar="أداء الفروع" data-en="Branch performance">أداء الفروع</h3>
-            <div class="bars" id="ownerBars" style="height:100px"></div>
-            <div class="legend">
-              <span><i style="background:var(--color-primary)"></i>Harbour St</span>
-              <span><i style="background:var(--color-muted-foreground)"></i>Old Town</span>
+
+          <div class="grid2">
+            <div class="panel">
+              <div class="panel-head"><h3 data-ar="الأطباق الأكثر مبيعًا" data-en="Best-selling dishes">الأطباق الأكثر مبيعًا</h3><span class="chip" data-ar="هذا الأسبوع" data-en="This week">هذا الأسبوع</span></div>
+              <div class="dish-row"><div class="dish-plate" style="background:var(--a1)">4.8</div><div class="meta"><b>Char grill Ribeye</b><span>Ember Counter · Harbour St</span></div><div class="count">96</div></div>
+              <div class="dish-row"><div class="dish-plate" style="background:var(--a4)">4.6</div><div class="meta"><b>Sunny Side up</b><span>Morning Room</span></div><div class="count">120</div></div>
+              <div class="dish-row"><div class="dish-plate" style="background:var(--a3)">4.9</div><div class="meta"><b>Black lentil Sea bass</b><span>Saltwater Kitchen</span></div><div class="count">88</div></div>
+              <div class="dish-row"><div class="dish-plate" style="background:var(--a5)">4.5</div><div class="meta"><b>Garden Salmon</b><span>The Greenhouse Table</span></div><div class="count">71</div></div>
+            </div>
+            <div class="panel">
+              <h3 data-ar="أداء الفروع" data-en="Branch performance">أداء الفروع</h3>
+              <div class="bars" id="ownerBars" style="height:100px"></div>
+              <div class="legend">
+                <span><i style="background:var(--color-primary)"></i>Harbour St</span>
+                <span><i style="background:var(--color-muted-foreground)"></i>Old Town</span>
+              </div>
             </div>
           </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3 data-ar="الطلبات الأخيرة" data-en="Recent orders">الطلبات الأخيرة</h3></div>
+            <table>
+              <thead><tr>
+                <th data-ar="رقم الطلب" data-en="Order">رقم الطلب</th>
+                <th data-ar="العميل" data-en="Customer">العميل</th>
+                <th data-ar="الفرع" data-en="Branch">الفرع</th>
+                <th data-ar="القيمة" data-en="Total">القيمة</th>
+                <th data-ar="الحالة" data-en="Status">الحالة</th>
+              </tr></thead>
+              <tbody>
+                <tr><td>#10482</td><td>Lina K.</td><td>Harbour St</td><td>$41.00</td><td><span class="status"><i class="dot" style="background:var(--a1)"></i><span data-ar="جاهز" data-en="Ready">جاهز</span></span></td></tr>
+                <tr><td>#10481</td><td>Omar S.</td><td>Old Town</td><td>$18.50</td><td><span class="status"><i class="dot" style="background:var(--a4)"></i><span data-ar="تحضير" data-en="Preparing">تحضير</span></span></td></tr>
+                <tr><td>#10480</td><td>Maya R.</td><td>Harbour St</td><td>$63.20</td><td><span class="status"><i class="dot" style="background:var(--color-muted-foreground)"></i><span data-ar="تم التوصيل" data-en="Delivered">تم التوصيل</span></span></td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <div class="panel">
-          <div class="panel-head"><h3 data-ar="الطلبات الأخيرة" data-en="Recent orders">الطلبات الأخيرة</h3></div>
-          <table>
-            <thead><tr>
-              <th data-ar="رقم الطلب" data-en="Order">رقم الطلب</th>
-              <th data-ar="العميل" data-en="Customer">العميل</th>
-              <th data-ar="الفرع" data-en="Branch">الفرع</th>
-              <th data-ar="القيمة" data-en="Total">القيمة</th>
-              <th data-ar="الحالة" data-en="Status">الحالة</th>
-            </tr></thead>
-            <tbody>
-              <tr><td>#10482</td><td>Lina K.</td><td>Harbour St</td><td>$41.00</td><td><span class="status"><i class="dot" style="background:var(--a1)"></i><span data-ar="جاهز" data-en="Ready">جاهز</span></span></td></tr>
-              <tr><td>#10481</td><td>Omar S.</td><td>Old Town</td><td>$18.50</td><td><span class="status"><i class="dot" style="background:var(--a4)"></i><span data-ar="تحضير" data-en="Preparing">تحضير</span></span></td></tr>
-              <tr><td>#10480</td><td>Maya R.</td><td>Harbour St</td><td>$63.20</td><td><span class="status"><i class="dot" style="background:var(--color-muted-foreground)"></i><span data-ar="تم التوصيل" data-en="Delivered">تم التوصيل</span></span></td></tr>
-            </tbody>
-          </table>
+        <div class="section-view" id="owner-generic-view" style="display:none">
+          <div class="eyebrow" data-ar="Ember Counter" data-en="Ember Counter">Ember Counter</div>
+          <h2 class="headline"><span class="thin" id="owner-generic-sub" data-ar="قسم" data-en="Section">قسم</span><span class="heavy" id="owner-generic-title">—</span></h2>
+          <div class="kpis" id="owner-generic-kpis"></div>
+          <div class="panel">
+            <div class="panel-head"><h3 id="owner-generic-tablehead" data-ar="السجلات" data-en="Records">السجلات</h3></div>
+            <table><thead><tr id="owner-generic-thead"></tr></thead><tbody id="owner-generic-tbody"></tbody></table>
+          </div>
         </div>
       </main>
     </div>
@@ -476,21 +553,125 @@
 
 <script>
   var dark = false, rtl = false;
+  var ICON_SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.3"/><path d="M12 2.5v2.6M12 18.9v2.6M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12h2.6M18.9 12h2.6M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>';
+  var ICON_MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>';
+
   function applyRtl(){ document.documentElement.dir = rtl ? "rtl" : "ltr"; document.documentElement.lang = rtl ? "ar" : "en";
     document.querySelectorAll("[data-ar]").forEach(function(el){ el.textContent = rtl ? el.dataset.ar : el.dataset.en; });
     document.querySelectorAll("[data-ar-ph]").forEach(function(el){ el.placeholder = rtl ? el.dataset.arPh : el.dataset.enPh; }); }
+
+  function updateThemeIcon(){
+    var btn = document.getElementById("darkBtn");
+    btn.innerHTML = dark ? ICON_SUN : ICON_MOON;
+    btn.title = dark ? "Light mode" : "Dark mode";
+  }
+
   document.getElementById("rtlBtn").addEventListener("click", function(){ rtl = !rtl; applyRtl(); });
-  document.getElementById("darkBtn").addEventListener("click", function(){ dark = !dark; document.documentElement.classList.toggle("dark", dark); });
+  document.getElementById("darkBtn").addEventListener("click", function(){ dark = !dark; document.documentElement.classList.toggle("dark", dark); updateThemeIcon(); });
+  updateThemeIcon();
   applyRtl();
 
+  function showScreen(role){
+    document.querySelectorAll(".role-tab").forEach(function(t){ t.setAttribute("aria-selected", t.dataset.role === role ? "true" : "false"); });
+    document.querySelectorAll(".screen").forEach(function(s){ s.classList.remove("active"); });
+    document.getElementById("screen-" + role).classList.add("active");
+  }
+
   document.querySelectorAll(".role-tab").forEach(function(tab){
-    tab.addEventListener("click", function(){
-      document.querySelectorAll(".role-tab").forEach(function(t){ t.setAttribute("aria-selected","false"); });
-      tab.setAttribute("aria-selected","true");
-      document.querySelectorAll(".screen").forEach(function(s){ s.classList.remove("active"); });
-      document.getElementById("screen-" + tab.dataset.role).classList.add("active");
-    });
+    tab.addEventListener("click", function(){ showScreen(tab.dataset.role); });
   });
+
+  /* ---- login ---- */
+  document.getElementById("loginSubmit").addEventListener("click", function(){
+    document.getElementById("roleTabsNav").hidden = false;
+    document.getElementById("logoutBtn").hidden = false;
+    showScreen("admin");
+  });
+  document.getElementById("logoutBtn").addEventListener("click", function(){
+    document.getElementById("roleTabsNav").hidden = true;
+    document.getElementById("logoutBtn").hidden = true;
+    document.querySelectorAll(".screen").forEach(function(s){ s.classList.remove("active"); });
+    document.getElementById("screen-login").classList.add("active");
+  });
+
+  /* ---- generic sidebar-section placeholder (one reusable template per role) ---- */
+  function hashStr(s){ var h = 0; for (var i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; } return Math.abs(h); }
+  var KPI_LABELS = [
+    {ar:"إجمالي السجلات", en:"Total records"},
+    {ar:"نشط", en:"Active"},
+    {ar:"أُضيف هذا الشهر", en:"Added this month"},
+    {ar:"متوسط القيمة", en:"Avg. value"}
+  ];
+  var COLS = [
+    {ar:"الاسم", en:"Name"}, {ar:"المرجع", en:"Reference"}, {ar:"القيمة", en:"Value"}, {ar:"الحالة", en:"Status"}
+  ];
+  var STATUS_WORDS = [{ar:"نشط", en:"Active"}, {ar:"قيد المراجعة", en:"Pending"}, {ar:"مؤرشف", en:"Archived"}];
+  var ACCENTS = ["--a1","--a2","--a3","--a4","--a5","--a6"];
+
+  function renderGeneric(role, labelAr, labelEn){
+    var h = hashStr(role + labelEn);
+    document.getElementById(role + "-generic-title").textContent = rtl ? labelAr : labelEn;
+    document.getElementById(role + "-generic-sub").dataset.ar = "قسم";
+
+    var kpis = document.getElementById(role + "-generic-kpis"); kpis.innerHTML = "";
+    var baseVals = [120 + (h % 900), 40 + (h % 55), 2 + (h % 30), 10 + (h % 90)];
+    KPI_LABELS.forEach(function(lab, i){
+      var div = document.createElement("div"); div.className = "kpi";
+      var val = i === 3 ? "$" + baseVals[i] : baseVals[i].toLocaleString();
+      div.innerHTML = '<div class="label" data-ar="' + lab.ar + '" data-en="' + lab.en + '">' + (rtl ? lab.ar : lab.en) + '</div><div class="value">' + val + '</div>';
+      kpis.appendChild(div);
+    });
+
+    var thead = document.getElementById(role + "-generic-thead"); thead.innerHTML = "";
+    COLS.forEach(function(c){
+      var th = document.createElement("th"); th.dataset.ar = c.ar; th.dataset.en = c.en; th.textContent = rtl ? c.ar : c.en;
+      thead.appendChild(th);
+    });
+
+    var tbody = document.getElementById(role + "-generic-tbody"); tbody.innerHTML = "";
+    for (var r = 0; r < 5; r++){
+      var rh = hashStr(role + labelEn + r);
+      var st = STATUS_WORDS[rh % STATUS_WORDS.length];
+      var accent = ACCENTS[rh % ACCENTS.length];
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td>' + labelEn + ' #' + (r + 1) + '</td>' +
+        '<td>REF-' + (1000 + (rh % 8999)) + '</td>' +
+        '<td>' + (50 + (rh % 950)) + '</td>' +
+        '<td><span class="status"><i class="dot" style="background:var(' + accent + ')"></i><span data-ar="' + st.ar + '" data-en="' + st.en + '">' + (rtl ? st.ar : st.en) + '</span></span></td>';
+      tbody.appendChild(tr);
+    }
+  }
+
+  function setupSidebarNav(role){
+    var sidebar = document.querySelector("#screen-" + role + " .sidebar");
+    if (!sidebar) return;
+    var items = sidebar.querySelectorAll(".nav-item");
+    items.forEach(function(item){
+      item.addEventListener("click", function(){
+        var labelSpan = item.querySelector("span[data-ar]");
+        var labelEn = labelSpan.dataset.en, labelAr = labelSpan.dataset.ar;
+
+        /* GIS items route to the shared GIS Intelligence screen instead of a placeholder */
+        if (/gis/i.test(labelEn)){ showScreen("gis"); return; }
+
+        items.forEach(function(i){ i.classList.remove("active"); });
+        item.classList.add("active");
+
+        var dash = document.getElementById(role + "-dashboard-view");
+        var gen = document.getElementById(role + "-generic-view");
+        if (labelEn === "Dashboard"){
+          dash.style.display = ""; gen.style.display = "none";
+        } else {
+          dash.style.display = "none"; gen.style.display = "";
+          renderGeneric(role, labelAr, labelEn);
+          applyRtl();
+        }
+      });
+    });
+  }
+  setupSidebarNav("admin");
+  setupSidebarNav("owner");
 
   function bars(id, values){
     var el = document.getElementById(id);
