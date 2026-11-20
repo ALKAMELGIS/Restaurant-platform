@@ -134,6 +134,10 @@
     background-size:28px 28px; background-color:var(--sidebar)}
   .map-ph .pin{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--color-primary)}
 
+  .spotlight-frame{height:520px;border:1px solid var(--border);border-radius:4px;overflow:hidden;background:var(--sidebar)}
+  .spotlight-frame iframe{width:100%;height:100%;border:0;display:block}
+  .spotlight-fallback{display:flex;align-items:center;justify-content:center;height:100%;color:var(--color-muted-foreground);font-size:13px;font-weight:600;text-decoration:none}
+
   .search-bar{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:4px;padding:11px 16px;margin-bottom:16px}
   .search-bar input{border:0;background:none;outline:none;flex:1;font:inherit;color:var(--color-foreground)}
   .search-bar svg{width:16px;height:16px;color:var(--color-muted-foreground);flex:none}
@@ -512,6 +516,13 @@
         <span class="chip-pill" data-ar="مشاوي" data-en="Grill">مشاوي</span>
         <span class="chip-pill" data-ar="مأكولات بحرية" data-en="Seafood">مأكولات بحرية</span>
         <span class="chip-pill" data-ar="فطور" data-en="Breakfast">فطور</span>
+      </div>
+
+      <div class="panel" style="padding:16px 18px 10px">
+        <div class="panel-head"><h3 data-ar="طبق مميز هذا الأسبوع" data-en="This week's dish spotlight">طبق مميز هذا الأسبوع</h3><span class="chip" data-ar="تصفّح وتفاعل" data-en="Scroll to explore">تصفّح وتفاعل</span></div>
+        <div class="spotlight-frame">
+          <iframe src="carousel/index.html" title="Dish spotlight" loading="lazy" onerror="this.closest('.spotlight-frame').innerHTML='<a class=&quot;spotlight-fallback&quot; href=&quot;carousel/index.html&quot; data-ar=&quot;افتح معاينة الطبق المميز ↗&quot; data-en=&quot;Open the dish spotlight ↗&quot;>Open the dish spotlight ↗</a>'"></iframe>
+        </div>
       </div>
 
       <div class="panel" style="padding:10px">
