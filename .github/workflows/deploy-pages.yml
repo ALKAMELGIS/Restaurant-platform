@@ -24,6 +24,11 @@ jobs:
           node-version: 20
       - run: npm install
       - run: npm run build
+      - name: Put the platform mockup at the site root, move the carousel demo to /carousel/
+        run: |
+          mkdir -p dist/carousel
+          mv dist/index.html dist/carousel/index.html
+          cp design/platform-mockup.html dist/index.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
